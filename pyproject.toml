@@ -1,0 +1,20 @@
+[project]
+name = "langchain-playground"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "padrisimo", email = "chamizho@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "langchain>=1.4.5",
+    "langchain-ollama>=1.1.0",
+]
+
+[project.scripts]
+langchain-playground = "langchain_playground:main"
+
+[build-system]
+requires = ["uv_build>=0.12.24,<0.13.0"]
+build-backend = "uv_build"
