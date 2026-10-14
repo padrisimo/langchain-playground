@@ -1,10 +1,13 @@
-from langchain_ollama import ChatOllama
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from langchain.messages import HumanMessage
 
-model = ChatOllama(
-    model="qwen3:1.7b",
-    temperature=0,
+model = init_chat_model(model="ollama:qwen3:1.7b", temperature=0)
+
+agent = create_agent(model=model)
+
+response = agent.invoke(
+    {"messages": [HumanMessage(content="Write a short poem about the ocean.")]}
 )
 
-response = model.invoke("what is the capital of France?")
-
-print(response.content)
+print(response["messages"][-1].content)
