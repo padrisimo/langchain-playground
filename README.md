@@ -1,6 +1,7 @@
 # LangChain Playground
 
 langChain playground and such
+Using duckduckgo-search & langchain-community instead of tavili to save 💵.
 
 ## DEV
 

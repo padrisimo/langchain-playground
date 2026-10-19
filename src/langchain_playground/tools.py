@@ -1,18 +1,13 @@
 from langchain.agents import create_agent
+from langchain_community.tools import DuckDuckGoSearchRun
 from langchain.tools import tool
+from typing import Any, Dict
+
 
 @tool
-def print_document(name: str, content: str) -> str:
+def web_search(query: str) -> str:
     """
-    Print a document with the given name and content.
-
-    Args:
-        name (str): The name of the document.
-        content (str): The content of the document.
-
-    Returns:
-        str: A confirmation message indicating that the document has been printed.
+    web search tool
     """
-    print(f"Document Name: {name}")
-    print(f"Content: {content}")
-    return f"Document '{name}' has been printed successfully." 
+    duckduckgo_client = DuckDuckGoSearchRun()
+    return duckduckgo_client.invoke(query)
