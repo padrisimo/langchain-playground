@@ -3,7 +3,6 @@ import mimetypes
 from pathlib import Path
 from tkinter import TclError, Tk, filedialog
 from langchain.messages import HumanMessage
-from langchain.agents import create_agent
 
 
 def choose_image_file() -> Path:

@@ -1,7 +1,6 @@
-from langchain.agents import create_agent
-from langchain.messages import HumanMessage
+from pathlib import Path
+from langchain_ollama import ChatOllama
 from langchain_playground.photo_decoder import build_image_message, choose_image_file
-from langchain_playground.prompt import CHEF_PROMPT, SYSTEM_CHEF_PROMPT
 from langchain_playground.tools import web_search
 import logging
 
@@ -10,20 +9,30 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
-logging.info("creating our agent...")
-agent = create_agent(
-    model="ollama:qwen3-vl:2b", tools=[web_search], system_prompt=SYSTEM_CHEF_PROMPT
+vision_llm = ChatOllama(
+    model="qwen2.5vl:3b", temperature=0, num_ctx=8192, keep_alive="10m"
 )
+tool_llm = ChatOllama(model="qwen3:1.7b", temperature=0, num_ctx=8192, keep_alive="10m")
 
-
-logging.info("choosing our image...")
 path = choose_image_file()
-message = build_image_message(path, CHEF_PROMPT)
-
-logging.info("invoking our agent...")
-response = agent.invoke(
-    {"messages": [message]}
+msg = build_image_message(
+    Path(path),
+    "List only the food ingredients you see, comma separated, no explanation.",
 )
 
+logging.info("identifying ingredients...")
+ingredients = vision_llm.invoke([msg]).content.strip()
+logging.info("ingredients: %s", ingredients)
 
-print(response["messages"][-1].content)
+logging.info("searching recipe...")
+search_results = web_search.invoke(f"recipe with {ingredients}")
+
+logging.info("summarizing recipe...")
+recipe = tool_llm.invoke(
+    [
+        ("system", "You are a chef. Summarize the recipe in clear, concise steps."),
+        ("human", f"Ingredients: {ingredients}\nSearch results:\n{search_results}"),
+    ]
+).content
+
+print(recipe)
